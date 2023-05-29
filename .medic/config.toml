@@ -21,7 +21,7 @@ checks = [
 [audit]
 
 checks = [
-  ## chrono and time have known potential segfaults
+  ## allow failure: chrono and time have known potential segfaults
   { name = "Audit crates", shell = "cargo audit", allow_failure = true, verbose = true },
   { check = "rust", command = "format-check" },
   { step = "rust", command = "clippy" },
