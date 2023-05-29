@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+
+trap "exit" INT
+
+source "$(brew --prefix)/share/medic-bash/cecho.bash"
+source "$(brew --prefix)/share/medic-bash/step.bash"
+
+set -e
+
+mkdir -p tmp/release
+mkdir -p target/universal-apple-darwin/release
+
+step_header "Build: Darwin aarch64" "cargo build --target aarch64-apple-darwin --workspace -r"
+echo
+cargo build --target aarch64-apple-darwin --workspace -r
+
+step_header "Build: Darwin x86_64" "cargo build --target x86_64-apple-darwin --workspace -r"
+echo
+cargo build --target x86_64-apple-darwin --workspace -r
+
+
+medic_rust=(medic-check-rust medic-step-rust)
+
+cmds=(${medic_rust[@]})
+
+for cmd in ${cmds[@]}; do
+  step "${cmd}: darwin universal" \
+    "(cd target/universal-apple-darwin/release \
+      && lipo ../../aarch64-apple-darwin/release/${cmd} ../../x86_64-apple-darwin/release/${cmd} -create -output ${cmd})"
+done
+
+step "medic-ext-rust: Create tar file" \
+  "(cd target/universal-apple-darwin/release \
+    && tar -czf ../../../tmp/release/medic-ext-rust-darwin-universal.tar.gz ${medic_rust[*]})"
+
+pushd tmp/release >/dev/null
+
+for file in $(ls *.tar.gz); do
+
+step "shasum: Darwin aarch64" \
+  "(sha256sum ${file} > ${file}.sha256sum)"
+
+done
+
+popd >/dev/null
+
+cecho --bright-green "\nChecksums:"
+(cd tmp/release && cat *.sha256sum)
+
