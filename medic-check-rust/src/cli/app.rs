@@ -34,7 +34,7 @@ pub struct CrateArgs {
 pub struct RustupArgs {
     /// Path to a release target
     #[clap(value_parser)]
-    #[arg(short, long, default_value = ".", value_hint = clap::ValueHint::CommandString)]
+    #[arg(short, long, value_hint = clap::ValueHint::CommandString)]
     pub target: String,
 }
 
