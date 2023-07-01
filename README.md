@@ -3,6 +3,24 @@
 An extension pack for using [medic](https://github.com/synchronal/medic-rs)
 with Rust projects.
 
+## Installation
+
+```shell
+brew tap synchronal/tap
+brew install medic-ext-rust
+```
+
+Example `Brewfile`:
+
+```shell
+tap 'synchronal/tap'
+
+brew  'synchronal/tap/medic'
+brew  'synchronal/tap/medic-ext-rust'
+```
+
+## Usage
+
 ```toml
 [doctor]
 
