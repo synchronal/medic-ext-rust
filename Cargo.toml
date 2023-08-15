@@ -4,6 +4,7 @@ members = [
     "medic-check-rust",
     "medic-step-rust",
 ]
+resolver = "1"
 
 [workspace.dependencies]
 clap = { version = "4.1.8" }
