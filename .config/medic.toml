@@ -40,7 +40,7 @@ steps = [
   { audit = {} },
   { update = {} },
   { test = {} },
-  { name = "Release", shell = ".medic/bin/release", verbose = true },
+  { name = "Release", shell = "bin/dev/release", verbose = true },
   { step = "git", command = "push" },
   { step = "github", command = "link-to-actions", verbose = true },
 ]
