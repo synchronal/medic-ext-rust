@@ -27,7 +27,7 @@ pub struct CrateArgs {
     /// Name of a crate.
     #[clap(value_parser)]
     #[arg(short, long, value_hint = clap::ValueHint::CommandString)]
-    pub name: String,
+    pub name: Vec<String>,
 }
 
 #[derive(Args, Debug)]
@@ -35,7 +35,7 @@ pub struct RustupArgs {
     /// Path to a release target
     #[clap(value_parser)]
     #[arg(short, long, value_hint = clap::ValueHint::CommandString)]
-    pub target: String,
+    pub target: Vec<String>,
 }
 
 #[derive(Args, Debug)]

@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- `crate-installed` and `target-installed` can specify multiple names.
+
 ## 0.2.1
 
 - `target-installed` check requires that `--target` be specified.

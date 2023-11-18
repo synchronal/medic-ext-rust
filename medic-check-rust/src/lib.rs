@@ -5,6 +5,7 @@ pub mod cli;
 use medic_lib::std_to_string;
 use medic_lib::CheckResult::{self, CheckError, CheckOk};
 
+use itertools::join;
 use regex::Regex;
 use std::process::Command;
 
@@ -54,21 +55,37 @@ pub fn check_formatting() -> CheckResult {
     }
 }
 
-pub fn crate_installed(name: String) -> CheckResult {
+pub fn crate_installed(names: Vec<String>) -> CheckResult {
     cargo_exists()?;
     match Command::new("cargo").args(["install", "--list"]).output() {
         Ok(command) => match command.status.success() {
             true => {
-                let pattern = Regex::new(&format!("(?m)^{} v", regex::escape(&name))).unwrap();
                 let stdout = std_to_string(command.stdout);
-                if pattern.is_match(&stdout) {
+                let mut missing_crates = vec![];
+                for name in names {
+                    let pattern = Regex::new(&format!("(?m)^{} v", regex::escape(&name))).unwrap();
+                    if !pattern.is_match(&stdout) {
+                        missing_crates.push(name);
+                    };
+                }
+
+                if missing_crates.is_empty() {
                     CheckOk
                 } else {
                     CheckError(
-                        format!("Rust crate `{name}` does not appear to be installed"),
+                        format!(
+                            "Rust crates {} do not appear to be installed",
+                            join(
+                                missing_crates
+                                    .iter()
+                                    .map(|c| format!("`{c}`"))
+                                    .collect::<Vec<_>>(),
+                                ", "
+                            )
+                        ),
                         Some(stdout),
                         Some(std_to_string(command.stderr)),
-                        Some(format!("cargo install {name}")),
+                        Some(format!("cargo install {}", join(missing_crates, " "))),
                     )
                 }
             }
@@ -113,23 +130,42 @@ pub fn rustup_exists() -> CheckResult {
     }
 }
 
-pub fn target_installed(target: String) -> CheckResult {
+pub fn target_installed(targets: Vec<String>) -> CheckResult {
     rustup_exists()?;
     match Command::new("rustup").args(["target", "list"]).output() {
         Ok(command) => match command.status.success() {
             true => {
-                let pattern =
-                    Regex::new(&format!("(?m)^{} \\(installed\\)", regex::escape(&target)))
-                        .unwrap();
                 let stdout = std_to_string(command.stdout);
-                if pattern.is_match(&stdout) {
+                let mut missing_targets = vec![];
+                for target in targets {
+                    let pattern =
+                        Regex::new(&format!("(?m)^{} \\(installed\\)", regex::escape(&target)))
+                            .unwrap();
+                    if !pattern.is_match(&stdout) {
+                        missing_targets.push(target);
+                    }
+                }
+
+                if missing_targets.is_empty() {
                     CheckOk
                 } else {
                     CheckError(
-                        format!("Rust target `{target}` does not appear to be installed"),
+                        format!(
+                            "Rust target {} does not appear to be installed",
+                            join(
+                                missing_targets
+                                    .iter()
+                                    .map(|c| format!("`{c}`"))
+                                    .collect::<Vec<_>>(),
+                                ", "
+                            )
+                        ),
                         Some(stdout),
                         Some(std_to_string(command.stderr)),
-                        Some(format!("rustup target install {target}")),
+                        Some(format!(
+                            "rustup target install {}",
+                            join(missing_targets, " ")
+                        )),
                     )
                 }
             }
