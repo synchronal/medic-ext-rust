@@ -4,7 +4,7 @@ members = [
     "medic-check-rust",
     "medic-step-rust",
 ]
-resolver = "1"
+resolver = "2"
 
 [workspace.dependencies]
 clap = { version = "4.1.8" }
@@ -12,3 +12,13 @@ indoc = "2.0.1"
 itertools = "0.12"
 medic-lib = "0.1"
 regex = "1.7"
+
+[workspace.package]
+authors = ["Eric Saxby <sax@livinginthepast.org>", "synchonal.dev"]
+description = "Development workflow automation/suggestion"
+edition = "2021"
+homepage = "https://github.com/synchronal"
+license = "MIT"
+readme = "./README.md"
+repository = "https://github.com/synchronal/medic-ext-rust"
+version = "0.2.1"
