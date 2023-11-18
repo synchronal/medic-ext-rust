@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+
+## 0.3.0
+
 - `crate-installed` and `target-installed` can specify multiple names.
 
 ## 0.2.1
