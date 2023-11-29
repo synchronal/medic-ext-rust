@@ -22,7 +22,7 @@ pub fn check_outdated(_args: CliArgs) -> Result<(), Box<dyn Error>> {
             if output.status.success() {
                 let stdout = std_to_string(output.stdout);
                 let outdated: OutdatedInfo = serde_json::from_str(&stdout)?;
-                for d in outdated.dependencies {
+                for d in &outdated.dependencies {
                     let name_re = Regex::new(r"^((?<parent>.*)->|)(?<name>.+)$").unwrap();
 
                     let result = name_re.captures(&d.name);
@@ -32,7 +32,7 @@ pub fn check_outdated(_args: CliArgs) -> Result<(), Box<dyn Error>> {
                     let name = captures.name("name").unwrap().as_str();
 
                     if let Some(parent) = captures.name("parent") {
-                        eprintln!(
+                        println!(
                             "::outdated::name={}::version={}::latest={}::parent={}",
                             name,
                             d.project,
@@ -40,11 +40,14 @@ pub fn check_outdated(_args: CliArgs) -> Result<(), Box<dyn Error>> {
                             parent.as_str()
                         );
                     } else {
-                        eprintln!(
+                        println!(
                             "::outdated::name={}::version={}::latest={}",
                             name, d.project, d.latest
                         );
                     }
+                }
+                if !outdated.dependencies.is_empty() {
+                    println!("::remedy::cargo update")
                 }
             } else {
                 return Err("::failure::Unable to get outdated".into());
