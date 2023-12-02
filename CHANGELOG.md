@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Add `medic-outdated-rust`.
 
 ## 0.3.0
 

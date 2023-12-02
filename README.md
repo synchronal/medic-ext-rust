@@ -23,7 +23,6 @@ brew  'synchronal/tap/medic-ext-rust'
 
 ```toml
 [doctor]
-
 checks = [
   { check = "asdf", command = "plugin-installed", args = { plugin = "rust" } },
   { check = "asdf", command = "package-installed", args = { plugin = "rust" } },
@@ -36,14 +35,12 @@ checks = [
 ]
 
 [test]
-
 checks = [
   { name = "Check for warnings", shell = "cargo build --workspace --features strict" },
   { step = "rust", command = "test", verbose = true },
 ]
 
 [audit]
-
 checks = [
   ## allow failure: chrono and time have known potential segfaults
   { name = "Audit crates", shell = "cargo audit", allow_failure = true, verbose = true },
@@ -51,15 +48,19 @@ checks = [
   { step = "rust", command = "clippy" },
 ]
 
-[update]
+[outdated]
+checks = [
+  { check = "rust" },
+  { check = "rust", cd: "crates/my-workspace-crate" },
+]
 
+[update]
 steps = [
   { step = "git", command = "pull" },
   { doctor = {} },
 ]
 
 [shipit]
-
 steps = [
   { audit = {} },
   { update = {} },
@@ -102,6 +103,11 @@ Is the given compilation target installed in the current Rust toolchain?
 medic-check-rust target-installed --target <target>
 medic-check-rust target-installed --target aarch64-apple-darwin
 ```
+
+
+## medic-outdated-rust
+
+Check for outdated crates.
 
 
 ## medic-step-rust
