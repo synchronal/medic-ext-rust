@@ -21,33 +21,35 @@ pub fn check_outdated(_args: CliArgs) -> Result<(), Box<dyn Error>> {
         Ok(output) => {
             if output.status.success() {
                 let stdout = std_to_string(output.stdout);
-                let outdated: OutdatedInfo = serde_json::from_str(&stdout)?;
-                for d in &outdated.dependencies {
-                    let name_re = Regex::new(r"^((?<parent>.*)->|)(?<name>.+)$").unwrap();
+                for line in stdout.lines() {
+                    let outdated: OutdatedInfo = serde_json::from_str(line)?;
+                    for d in &outdated.dependencies {
+                        let name_re = Regex::new(r"^((?<parent>.*)->|)(?<name>.+)$").unwrap();
 
-                    let result = name_re.captures(&d.name);
-                    let captures = result
-                        .expect("Error running regex")
-                        .expect("No match found");
-                    let name = captures.name("name").unwrap().as_str();
+                        let result = name_re.captures(&d.name);
+                        let captures = result
+                            .expect("Error running regex")
+                            .expect("No match found");
+                        let name = captures.name("name").unwrap().as_str();
 
-                    if let Some(parent) = captures.name("parent") {
-                        println!(
-                            "::outdated::name={}::version={}::latest={}::parent={}",
-                            name,
-                            d.project,
-                            d.latest,
-                            parent.as_str()
-                        );
-                    } else {
-                        println!(
-                            "::outdated::name={}::version={}::latest={}",
-                            name, d.project, d.latest
-                        );
+                        if let Some(parent) = captures.name("parent") {
+                            println!(
+                                "::outdated::name={}::version={}::latest={}::parent={}",
+                                name,
+                                d.project,
+                                d.latest,
+                                parent.as_str()
+                            );
+                        } else {
+                            println!(
+                                "::outdated::name={}::version={}::latest={}",
+                                name, d.project, d.latest
+                            );
+                        }
                     }
-                }
-                if !outdated.dependencies.is_empty() {
-                    println!("::remedy::cargo update")
+                    if !outdated.dependencies.is_empty() {
+                        println!("::remedy::cargo update")
+                    }
                 }
             } else {
                 return Err("::failure::Unable to get outdated".into());
