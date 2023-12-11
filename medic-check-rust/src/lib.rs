@@ -8,29 +8,37 @@ use medic_lib::CheckResult::{self, CheckError, CheckOk};
 use itertools::join;
 use regex::Regex;
 use std::process::Command;
+use which::which;
 
-pub fn cargo_exists() -> CheckResult {
-    match Command::new("which").args(["cargo"]).output() {
-        Ok(which) => {
-            if which.status.success() {
+pub fn cargo_audit() -> CheckResult {
+    cargo_exists()?;
+    maybe_install_cargo_audit()?;
+
+    match Command::new("cargo")
+        .args(["audit", "--color=always"])
+        .output()
+    {
+        Ok(output) => {
+            if output.status.success() {
                 CheckOk
             } else {
-                let stdout = std_to_string(which.stdout);
-                let stderr = std_to_string(which.stderr);
                 CheckError(
-                    "Unable to find cargo in PATH.".into(),
-                    Some(stdout),
-                    Some(stderr),
-                    Some("asdf install rust".into()),
+                    "Vulnerable crates detected".into(),
+                    Some(std_to_string(output.stdout)),
+                    Some(std_to_string(output.stderr)),
+                    None,
                 )
             }
         }
-        Err(_err) => CheckError(
-            "Unable to search for cargo. Is `which` in your PATH?".into(),
-            None,
-            None,
-            None,
-        ),
+        Err(err) => CheckError(err.to_string(), None, None, None),
+    }
+}
+
+pub fn cargo_exists() -> CheckResult {
+    if which("cargo").is_err() {
+        CheckError("Unable to find cargo in PATH.".into(), None, None, None)
+    } else {
+        CheckOk
     }
 }
 
@@ -105,28 +113,30 @@ pub fn crate_installed(names: Vec<String>) -> CheckResult {
     }
 }
 
-pub fn rustup_exists() -> CheckResult {
-    match Command::new("which").args(["rustup"]).output() {
-        Ok(which) => {
-            if which.status.success() {
-                CheckOk
-            } else {
-                let stdout = std_to_string(which.stdout);
-                let stderr = std_to_string(which.stderr);
-                CheckError(
-                    "Unable to find rustup in PATH.".into(),
-                    Some(stdout),
-                    Some(stderr),
-                    Some("asdf install rust".into()),
-                )
-            }
+pub fn maybe_install_cargo_audit() -> CheckResult {
+    if which("cargo-audit").is_err() {
+        let mut command = Command::new("cargo");
+        command.args(["install", "cargo-audit", "--color=always"]);
+        let output = command.output().unwrap();
+
+        if !output.status.success() {
+            return CheckError(
+                "Error installing cargo-audit".into(),
+                Some(std_to_string(output.stdout)),
+                Some(std_to_string(output.stderr)),
+                None,
+            );
         }
-        Err(_err) => CheckError(
-            "Unable to search for rustup. Is `which` in your PATH?".into(),
-            None,
-            None,
-            None,
-        ),
+    }
+
+    CheckOk
+}
+
+pub fn rustup_exists() -> CheckResult {
+    if which("rustup").is_err() {
+        CheckError("Unable to find rustup in PATH.".into(), None, None, None)
+    } else {
+        CheckOk
     }
 }
 

@@ -12,6 +12,7 @@ indoc = { workspace = true }
 itertools = { workspace = true }
 medic-lib = { workspace = true }
 regex = { workspace = true }
+which = { workspace = true }
 
 
 [features]

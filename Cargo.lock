@@ -212,6 +212,7 @@ dependencies = [
  "itertools",
  "medic-lib",
  "regex",
+ "which",
 ]
 
 [[package]]

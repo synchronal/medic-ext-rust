@@ -14,6 +14,8 @@ pub struct CliArgs {
 
 #[derive(Debug, Subcommand)]
 pub enum Command {
+    /// Runs cargo audit.
+    Audit(NoopArgs),
     /// Checks that a crate is installed locally.
     CrateInstalled(CrateArgs),
     /// Checks that a crate is installed locally.

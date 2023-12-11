@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add `audit` to `medic-check-rust`.
+
 ## 0.4.0
 
 - Add `medic-outdated-rust`.
