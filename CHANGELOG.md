@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- `medic-step-rust test` includes color.
 - Add `audit` to `medic-check-rust`.
 
 ## 0.4.0

@@ -29,7 +29,7 @@ pub fn run_clippy() -> StepResult {
 
 pub fn run_tests() -> StepResult {
     match Command::new("cargo")
-        .args(["test"])
+        .args(["test", "--color", "always"])
         .stdout(Stdio::inherit())
         .stderr(Stdio::inherit())
         .output()
