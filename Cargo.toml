@@ -9,14 +9,14 @@ resolver = "2"
 
 [workspace.dependencies]
 clap = { version = "4.1.8" }
-fancy-regex = "0.12"
+fancy-regex = "0.13"
 indoc = "2.0.1"
 itertools = "0.12"
-medic-lib = "0.1"
+medic-lib = "0.2"
 regex = "1.7"
 serde = "1.0"
 serde_json = "1.0"
-which = "5.0"
+which = "6.0"
 
 [workspace.package]
 authors = ["Eric Saxby <sax@livinginthepast.org>", "synchonal.dev"]
