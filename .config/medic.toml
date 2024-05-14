@@ -12,14 +12,14 @@ checks = [
 
 [test]
 checks = [
-  { name = "Check for warnings", shell = "cargo build --workspace --features strict" },
+  { name = "Check for warnings", shell = "cargo build --workspace --features strict --color always" },
   { step = "rust", command = "test", verbose = true },
 ]
 
 [audit]
 checks = [
   ## allow failure: chrono and time have known potential segfaults
-  { name = "Audit crates", shell = "cargo audit", allow_failure = true, verbose = true },
+  { name = "Audit crates", shell = "cargo audit --color always", allow_failure = true, verbose = true },
   { check = "rust", command = "format-check" },
   { step = "rust", command = "clippy" },
 ]
