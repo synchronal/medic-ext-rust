@@ -12,7 +12,7 @@ checks = [
 
 [test]
 checks = [
-  { name = "Check for warnings", shell = "cargo build --workspace --features strict --color always" },
+  { name = "Check for warnings", shell = "cargo build --workspace --features strict --color always", verbose = true },
   { step = "rust", command = "test", verbose = true },
 ]
 
