@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 1.0.0
+
 - `outdated` remedy includes `--verbose` flag for better visibility into
   unchanged dependencies.
 

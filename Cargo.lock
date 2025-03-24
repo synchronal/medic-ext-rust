@@ -217,7 +217,7 @@ checksum = "fe7db12097d22ec582439daf8618b8fdd1a7bef6270e9af3b1ebcd30893cf413"
 
 [[package]]
 name = "medic-check-rust"
-version = "0.5.0"
+version = "1.0.0"
 dependencies = [
  "clap",
  "indoc",
@@ -239,7 +239,7 @@ dependencies = [
 
 [[package]]
 name = "medic-outdated-rust"
-version = "0.5.0"
+version = "1.0.0"
 dependencies = [
  "clap",
  "fancy-regex",
@@ -252,7 +252,7 @@ dependencies = [
 
 [[package]]
 name = "medic-step-rust"
-version = "0.5.0"
+version = "1.0.0"
 dependencies = [
  "clap",
  "indoc",
