@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- `outdated` remedy includes `--verbose` flag for better visibility into
+  unchanged dependencies.
+
 ## 0.5.0
 
 - `medic-step-rust test` includes color.

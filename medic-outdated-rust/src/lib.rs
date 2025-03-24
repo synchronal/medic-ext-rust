@@ -48,7 +48,7 @@ pub fn check_outdated(_args: CliArgs) -> Result<(), Box<dyn Error>> {
                         }
                     }
                     if !outdated.dependencies.is_empty() {
-                        println!("::remedy::cargo update")
+                        println!("::remedy::cargo update --verbose")
                     }
                 }
             } else {
