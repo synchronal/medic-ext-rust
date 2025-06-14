@@ -1,18 +1,18 @@
 # Medic Rust
 
-An extension pack for using [medic](https://github.com/synchronal/medic-rs)
-with Rust projects.
+An extension pack for using
+[medic](https://github.com/synchronal/medic-rs) with Rust projects.
 
 ## Installation
 
-```shell
+``` shell
 brew tap synchronal/tap
 brew install medic-ext-rust
 ```
 
 Example `Brewfile`:
 
-```shell
+``` shell
 tap 'synchronal/tap'
 
 brew  'synchronal/tap/medic'
@@ -21,7 +21,7 @@ brew  'synchronal/tap/medic-ext-rust'
 
 ## Usage
 
-```toml
+``` toml
 [doctor]
 checks = [
   { check = "asdf", command = "plugin-installed", args = { plugin = "rust" } },
@@ -71,7 +71,8 @@ steps = [
 ]
 ```
 
-Check out the [release script](https://github.com/synchronal/medic-ext-rust/blob/main/.medic/bin/release)
+Check out the [release
+script](https://github.com/synchronal/medic-ext-rust/blob/main/.medic/bin/release)
 for an example of packaging a Rust project for GitHub releases.
 
 ## medic-check-rust
@@ -82,7 +83,7 @@ Checks for whether a Rust project is configured and/or ready to ship.
 
 Is a given crate installed into the current Rust toolchain?
 
-```shell
+``` shell
 medic-check-rust crate-installed --name <name>
 medic-check-rust crate-installed --name cargo-audit
 ```
@@ -91,7 +92,7 @@ medic-check-rust crate-installed --name cargo-audit
 
 Is the project properly formatted?
 
-```shell
+``` shell
 medic-check-rust format-check
 ```
 
@@ -99,16 +100,14 @@ medic-check-rust format-check
 
 Is the given compilation target installed in the current Rust toolchain?
 
-```shell
+``` shell
 medic-check-rust target-installed --target <target>
 medic-check-rust target-installed --target aarch64-apple-darwin
 ```
 
-
 ## medic-outdated-rust
 
 Check for outdated crates.
-
 
 ## medic-step-rust
 
@@ -118,7 +117,7 @@ Steps for verifying the project is ready to ship.
 
 Run the Rust linter.
 
-```shell
+``` shell
 medic-step-rust clippy
 ```
 
@@ -126,7 +125,6 @@ medic-step-rust clippy
 
 Run all tests.
 
-```shell
+``` shell
 medic-step-rust test
 ```
-

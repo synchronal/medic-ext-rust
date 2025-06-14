@@ -22,6 +22,7 @@ checks = [
   { name = "Audit crates", shell = "cargo audit --color always", allow_failure = true, verbose = true },
   { check = "rust", command = "format-check" },
   { step = "rust", command = "clippy" },
+  { name = "Check md format", shell = "bin/dev/format-md --check", remedy = "bin/dev/format-md --all" },
 ]
 
 [outdated]
