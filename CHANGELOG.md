@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## 1.0.1
+
+- Update dependencies.
+
 ## 1.0.0
 
 - `outdated` remedy includes `--verbose` flag for better visibility into
