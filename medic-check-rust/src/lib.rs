@@ -2,8 +2,8 @@
 
 pub mod cli;
 
-use medic_lib::std_to_string;
 use medic_lib::CheckResult::{self, CheckError, CheckOk};
+use medic_lib::std_to_string;
 
 use itertools::join;
 use regex::Regex;
