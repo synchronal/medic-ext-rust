@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-## 1.1.1
+## 1.1.0
 
 - `medic-check-rust crate-installed` remedy includes `--locked`.
 
