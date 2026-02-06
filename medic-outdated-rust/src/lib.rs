@@ -13,6 +13,17 @@ use std::process::{Command, Stdio};
 use std::thread;
 use which::which;
 
+fn parse_dependency_name(input: &str) -> (Option<&str>, &str) {
+    let re = Regex::new(r"^((?<parent>.*)->|)(?<name>.+)$").unwrap();
+    let captures = re
+        .captures(input)
+        .expect("Error running regex")
+        .expect("No match found");
+    let name = captures.name("name").unwrap().as_str();
+    let parent = captures.name("parent").map(|m| m.as_str());
+    (parent, name)
+}
+
 pub fn check_outdated(_args: CliArgs) -> Result<(), Box<dyn Error>> {
     let mut command = Command::new("cargo");
     command.args(["outdated", "--format=json"]);
@@ -24,21 +35,12 @@ pub fn check_outdated(_args: CliArgs) -> Result<(), Box<dyn Error>> {
                 for line in stdout.lines() {
                     let outdated: OutdatedInfo = serde_json::from_str(line)?;
                     for d in &outdated.dependencies {
-                        let name_re = Regex::new(r"^((?<parent>.*)->|)(?<name>.+)$").unwrap();
+                        let (parent, name) = parse_dependency_name(&d.name);
 
-                        let result = name_re.captures(&d.name);
-                        let captures = result
-                            .expect("Error running regex")
-                            .expect("No match found");
-                        let name = captures.name("name").unwrap().as_str();
-
-                        if let Some(parent) = captures.name("parent") {
+                        if let Some(parent) = parent {
                             println!(
                                 "::outdated::name={}::version={}::latest={}::parent={}",
-                                name,
-                                d.project,
-                                d.latest,
-                                parent.as_str()
+                                name, d.project, d.latest, parent
                             );
                         } else {
                             println!(
@@ -101,4 +103,37 @@ pub fn maybe_install_cargo_outdated() -> Result<(), Box<dyn Error>> {
         }
     }
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::parse_dependency_name;
+
+    #[test]
+    fn parse_dependency_name_without_parent() {
+        let (parent, name) = parse_dependency_name("serde");
+        assert_eq!(parent, None);
+        assert_eq!(name, "serde");
+    }
+
+    #[test]
+    fn parse_dependency_name_with_parent() {
+        let (parent, name) = parse_dependency_name("tokio->serde");
+        assert_eq!(parent, Some("tokio"));
+        assert_eq!(name, "serde");
+    }
+
+    #[test]
+    fn parse_dependency_name_with_complex_names() {
+        let (parent, name) = parse_dependency_name("my-crate->other-crate");
+        assert_eq!(parent, Some("my-crate"));
+        assert_eq!(name, "other-crate");
+    }
+
+    #[test]
+    fn parse_dependency_name_with_multiple_arrows() {
+        let (parent, name) = parse_dependency_name("grandparent->parent->child");
+        assert_eq!(parent, Some("grandparent->parent"));
+        assert_eq!(name, "child");
+    }
 }

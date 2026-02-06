@@ -10,6 +10,29 @@ use regex::Regex;
 use std::process::Command;
 use which::which;
 
+fn find_missing_crates(stdout: &str, names: &[String]) -> Vec<String> {
+    let mut missing = vec![];
+    for name in names {
+        let pattern = Regex::new(&format!("(?m)^{} v", regex::escape(name))).unwrap();
+        if !pattern.is_match(stdout) {
+            missing.push(name.clone());
+        }
+    }
+    missing
+}
+
+fn find_missing_targets(stdout: &str, targets: &[String]) -> Vec<String> {
+    let mut missing = vec![];
+    for target in targets {
+        let pattern =
+            Regex::new(&format!("(?m)^{} \\(installed\\)", regex::escape(target))).unwrap();
+        if !pattern.is_match(stdout) {
+            missing.push(target.clone());
+        }
+    }
+    missing
+}
+
 pub fn cargo_audit() -> CheckResult {
     cargo_exists()?;
     maybe_install_cargo_audit()?;
@@ -69,13 +92,7 @@ pub fn crate_installed(names: Vec<String>) -> CheckResult {
         Ok(command) => match command.status.success() {
             true => {
                 let stdout = std_to_string(command.stdout);
-                let mut missing_crates = vec![];
-                for name in names {
-                    let pattern = Regex::new(&format!("(?m)^{} v", regex::escape(&name))).unwrap();
-                    if !pattern.is_match(&stdout) {
-                        missing_crates.push(name);
-                    };
-                }
+                let missing_crates = find_missing_crates(&stdout, &names);
 
                 if missing_crates.is_empty() {
                     CheckOk
@@ -149,15 +166,7 @@ pub fn target_installed(targets: Vec<String>) -> CheckResult {
         Ok(command) => match command.status.success() {
             true => {
                 let stdout = std_to_string(command.stdout);
-                let mut missing_targets = vec![];
-                for target in targets {
-                    let pattern =
-                        Regex::new(&format!("(?m)^{} \\(installed\\)", regex::escape(&target)))
-                            .unwrap();
-                    if !pattern.is_match(&stdout) {
-                        missing_targets.push(target);
-                    }
-                }
+                let missing_targets = find_missing_targets(&stdout, &targets);
 
                 if missing_targets.is_empty() {
                     CheckOk
@@ -195,5 +204,59 @@ pub fn target_installed(targets: Vec<String>) -> CheckResult {
             None,
             None,
         ),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{find_missing_crates, find_missing_targets};
+
+    #[test]
+    fn find_missing_crates_returns_empty_when_all_installed() {
+        let stdout =
+            "cargo-audit v0.18.1:\n    cargo-audit\ncargo-outdated v0.13.1:\n    cargo-outdated\n";
+        let names = vec!["cargo-audit".to_string(), "cargo-outdated".to_string()];
+        assert_eq!(find_missing_crates(stdout, &names), Vec::<String>::new());
+    }
+
+    #[test]
+    fn find_missing_crates_returns_missing_crates() {
+        let stdout = "cargo-audit v0.18.1:\n    cargo-audit\n";
+        let names = vec!["cargo-audit".to_string(), "cargo-outdated".to_string()];
+        assert_eq!(find_missing_crates(stdout, &names), vec!["cargo-outdated"]);
+    }
+
+    #[test]
+    fn find_missing_crates_handles_crate_with_hyphen() {
+        let stdout = "my-crate v1.0.0:\n    my-crate\n";
+        let names = vec!["my-crate".to_string()];
+        assert_eq!(find_missing_crates(stdout, &names), Vec::<String>::new());
+    }
+
+    #[test]
+    fn find_missing_targets_returns_empty_when_all_installed() {
+        let stdout = "aarch64-apple-darwin (installed)\nx86_64-apple-darwin (installed)\n";
+        let targets = vec!["aarch64-apple-darwin".to_string()];
+        assert_eq!(find_missing_targets(stdout, &targets), Vec::<String>::new());
+    }
+
+    #[test]
+    fn find_missing_targets_returns_missing_targets() {
+        let stdout = "aarch64-apple-darwin (installed)\nx86_64-apple-darwin\n";
+        let targets = vec![
+            "aarch64-apple-darwin".to_string(),
+            "x86_64-apple-darwin".to_string(),
+        ];
+        assert_eq!(
+            find_missing_targets(stdout, &targets),
+            vec!["x86_64-apple-darwin"]
+        );
+    }
+
+    #[test]
+    fn find_missing_crates_not_fooled_by_prefix_match() {
+        let stdout = "cargo-audit-extended v1.0.0:\n    cargo-audit-extended\n";
+        let names = vec!["cargo-audit".to_string()];
+        assert_eq!(find_missing_crates(stdout, &names), vec!["cargo-audit"]);
     }
 }
