@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- `medic-check-rust crate-installed` remedy includes `--locked`.
+
 ## 1.0.1
 
 - Update dependencies.

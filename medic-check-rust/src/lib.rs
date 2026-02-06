@@ -93,7 +93,10 @@ pub fn crate_installed(names: Vec<String>) -> CheckResult {
                         ),
                         Some(stdout),
                         Some(std_to_string(command.stderr)),
-                        Some(format!("cargo install {}", join(missing_crates, " "))),
+                        Some(format!(
+                            "cargo install --locked {}",
+                            join(missing_crates, " ")
+                        )),
                     )
                 }
             }
