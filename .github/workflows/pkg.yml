@@ -97,7 +97,7 @@ jobs:
 
           scp -r freebsd:$GITHUB_WORKSPACE/medic-ext-rust-*.txz .
       - name: Save pkg artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: freebsd-package-${{ env.FREEBSD_VERSION }}
           path: medic-*.txz
