@@ -27,6 +27,7 @@ jobs:
           envs: 'GITHUB_RUN_NUMBER GITHUB_SHA CARGO_TERM_COLOR'
           usesh: true
           prepare: |
+            export ASSUME_ALWAYS_YES=yes
             mkdir -p /usr/local/etc/pkg/repos
             echo 'FreeBSD: { url: "http://pkg.FreeBSD.org/${ABI}/latest" }' > /usr/local/etc/pkg/repos/FreeBSD.conf
             pkg update -f
@@ -71,6 +72,7 @@ jobs:
           envs: 'GITHUB_RUN_NUMBER GITHUB_SHA CARGO_TERM_COLOR'
           usesh: true
           prepare: |
+            export ASSUME_ALWAYS_YES=yes
             mkdir -p /usr/local/etc/pkg/repos
             echo 'FreeBSD: { url: "http://pkg.FreeBSD.org/${ABI}/latest" }' > /usr/local/etc/pkg/repos/FreeBSD.conf
             pkg update -f
