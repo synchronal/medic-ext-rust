@@ -80,14 +80,14 @@ pub fn maybe_install_cargo_outdated() -> Result<(), Box<dyn Error>> {
             reader
                 .lines()
                 .map_while(Result::ok)
-                .for_each(|line| eprintln!("::info::cargo-outdated-install::{}", &line));
+                .for_each(|line| eprintln!("::info::cargo-outdated-install::{line}"));
         });
         let err_thr = thread::spawn(move || {
             let reader = BufReader::new(stderr);
             reader
                 .lines()
                 .map_while(Result::ok)
-                .for_each(|line| eprintln!("::info::cargo-outdated-install::{}", &line));
+                .for_each(|line| eprintln!("::info::cargo-outdated-install::{line}"));
         });
 
         let output = child.wait_with_output();
